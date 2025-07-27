@@ -62,17 +62,20 @@
                                 </div>
                                 <div class="parking-spots">
                                     {% for spot_num in range(1, lot.Total_spots + 1) %}
-                                        {% set status = spot_status.get((lot.Lot_Id, spot_num), 'Available') %}
+                                        {% set spot_info = spot_status.get((lot.Lot_Id, spot_num)) %}
+                                            {% if spot_info %}
+                                                {% set status = spot_info.status %}
+                                                {% set spot_id = spot_info.spot_id %}
+                                                {% set lot_id = spot_info.lot_id %}
+                                            {% else %}
+                                                {% set status = 'Available' %}
+                                                {% set spot_id = spot_num %}
+                                                {% set lot_id = lot.Lot_Id %}
+                                            {% endif %}
                                             <div class="spot {{ 'Started' if status in ['Started', 'Booked'] else 'available' }}">
-                                                {% if status in ['Started', 'Booked'] %}
-                                                    <a href="/occupied" style="text-decoration: none;">
-                                                        O
-                                                    </a>
-                                                {% else %}
-                                                    <a href="/available" style="text-decoration: none;">
-                                                        A
-                                                    </a>
-                                                {% endif %}
+                                                <a href="/spot/{{ lot_id }}/{{ spot_id }}" style="text-decoration: none;">
+                                                    {{ 'O' if status in ['Started', 'Booked'] else 'A' }}
+                                                </a>
                                             </div>
                                     {% endfor %}
                                 </div>
